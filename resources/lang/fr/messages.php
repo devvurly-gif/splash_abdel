@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'welcome' => 'Bienvenue',
+    'login' => 'Connexion',
+    'logout' => 'Déconnexion',
+    'email' => 'Email',
+    'password' => 'Mot de passe',
+    'remember_me' => 'Se souvenir de moi',
+    'dashboard' => 'Tableau de bord',
+    'categories' => 'Catégories',
+    'brands' => 'Marques',
+    'products' => 'Produits',
+    'sales' => 'Ventes',
+    'purchases' => 'Achats',
+    'stock' => 'Stock',
+    'settings' => 'Paramètres',
+    'save' => 'Enregistrer',
+    'cancel' => 'Annuler',
+    'delete' => 'Supprimer',
+    'edit' => 'Modifier',
+    'create' => 'Créer',
+    'update' => 'Mettre à jour',
+    'search' => 'Rechercher',
+    'actions' => 'Actions',
+    'success' => 'Succès',
+    'error' => 'Erreur',
+    'warning' => 'Avertissement',
+    'info' => 'Information',
+];
+

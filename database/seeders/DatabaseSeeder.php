@@ -14,6 +14,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            NumberingSystemSeeder::class,
+            CategorySeeder::class, // Must be after NumberingSystemSeeder
+            BrandSeeder::class, // Must be after NumberingSystemSeeder
+            WarehouseSeeder::class, // Must be after NumberingSystemSeeder
         ]);
     }
 }

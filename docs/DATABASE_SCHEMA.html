@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema - Splash Local</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .schema-diagram {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .table-info {
+            margin-top: 30px;
+        }
+        .table-card {
+            background: #f9fafb;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .table-name {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .field {
+            padding: 5px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .field-key {
+            color: #059669;
+            font-weight: bold;
+        }
+        .field-fk {
+            color: #dc2626;
+        }
+        .legend {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            margin: 5px 0;
+        }
+        .legend-key {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Database Schema - Splash Local</h1>
+        <p><strong>Generated:</strong> <span id="date"></span></p>
+        
+        <div class="legend">
+            <h3>Legend</h3>
+            <div class="legend-item">
+                <span class="legend-key" style="background: #059669;"></span>
+                <strong>PK</strong> - Primary Key
+            </div>
+            <div class="legend-item">
+                <span class="legend-key" style="background: #dc2626;"></span>
+                <strong>FK</strong> - Foreign Key
+            </div>
+            <div class="legend-item">
+                <span class="legend-key" style="background: #2563eb;"></span>
+                <strong>UK</strong> - Unique Key
+            </div>
+        </div>
+
+        <h2>Entity Relationship Diagram</h2>
+        <div class="schema-diagram">
+            <div class="mermaid">
+erDiagram
+    USERS ||--o{ PAYMENTS : "creates"
+    USERS ||--o{ DELIVERIES : "creates"
+    
+    NUMBERING_SYSTEMS ||--o{ CATEGORIES : "generates_code"
+    NUMBERING_SYSTEMS ||--o{ BRANDS : "generates_code"
+    NUMBERING_SYSTEMS ||--o{ PAYMENT_METHODS : "generates_code"
+    NUMBERING_SYSTEMS ||--o{ PAYMENTS : "generates_code"
+    NUMBERING_SYSTEMS ||--o{ DELIVERY_METHODS : "generates_code"
+    NUMBERING_SYSTEMS ||--o{ DELIVERIES : "generates_code"
+    
+    PAYMENT_METHODS ||--o{ PAYMENTS : "uses"
+    DELIVERY_METHODS ||--o{ DELIVERIES : "uses"
+    
+    USERS {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        timestamps created_at_updated_at
+    }
+    
+    NUMBERING_SYSTEMS {
+        bigint id PK
+        string title
+        string domain
+        string type
+        string template
+        integer next_trick
+        boolean isActive
+        timestamps created_at_updated_at
+    }
+    
+    CATEGORIES {
+        bigint id PK
+        string code UK
+        string title
+        boolean status
+        timestamps created_at_updated_at
+    }
+    
+    BRANDS {
+        bigint id PK
+        string code UK
+        string title
+        boolean status
+        timestamps created_at_updated_at
+    }
+    
+    PAYMENT_METHODS {
+        bigint id PK
+        string code UK
+        string name
+        text description
+        boolean requires_reference
+        boolean is_active
+        timestamps created_at_updated_at
+    }
+    
+    PAYMENTS {
+        bigint id PK
+        string code UK
+        string payable_type
+        bigint payable_id
+        bigint payment_method_id FK
+        decimal amount
+        decimal paid_amount
+        enum type
+        enum status
+        date payment_date
+        date due_date
+        string reference_number
+        text notes
+        bigint created_by FK
+        timestamps created_at_updated_at
+    }
+    
+    DELIVERY_METHODS {
+        bigint id PK
+        string code UK
+        string name
+        text description
+        decimal base_cost
+        boolean is_active
+        timestamps created_at_updated_at
+    }
+    
+    DELIVERIES {
+        bigint id PK
+        string code UK
+        string deliverable_type
+        bigint deliverable_id
+        bigint delivery_method_id FK
+        enum status
+        date scheduled_date
+        date delivered_date
+        decimal delivery_cost
+        string tracking_number
+        text delivery_address
+        text notes
+        bigint created_by FK
+        timestamps created_at_updated_at
+    }
+            </div>
+        </div>
+
+        <h2>Table Details</h2>
+        
+        <div class="table-info">
+            <div class="table-card">
+                <div class="table-name">users</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">name - string</div>
+                <div class="field">email (UK) - string</div>
+                <div class="field">password - string (hashed)</div>
+                <div class="field">created_at, updated_at - timestamps</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">numbering_systems</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">title - string</div>
+                <div class="field">domain - string (structure, sale, purchase, stock)</div>
+                <div class="field">type - string (category, brand, payment_method, etc.)</div>
+                <div class="field">template - string (e.g., "CAT-{0000}", "PAY-{YY}-{0000}")</div>
+                <div class="field">next_trick - integer</div>
+                <div class="field">isActive - boolean</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">categories</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: CAT-0001)</div>
+                <div class="field">title - string</div>
+                <div class="field">status - boolean</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">brands</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: BR-001)</div>
+                <div class="field">title - string</div>
+                <div class="field">status - boolean</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">payment_methods</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: PM-001)</div>
+                <div class="field">name - string</div>
+                <div class="field">description - text</div>
+                <div class="field">requires_reference - boolean</div>
+                <div class="field">is_active - boolean</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">payments</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: PAY-24-0001)</div>
+                <div class="field">payable_type - string (Polymorphic)</div>
+                <div class="field">payable_id - bigint (Polymorphic)</div>
+                <div class="field"><span class="field-fk">payment_method_id</span> (FK) → payment_methods.id</div>
+                <div class="field">amount - decimal(15,2)</div>
+                <div class="field">paid_amount - decimal(15,2)</div>
+                <div class="field">type - enum (deposit, partial, full, refund)</div>
+                <div class="field">status - enum (pending, completed, failed, cancelled)</div>
+                <div class="field">payment_date - date</div>
+                <div class="field">due_date - date (nullable)</div>
+                <div class="field">reference_number - string (nullable)</div>
+                <div class="field">notes - text (nullable)</div>
+                <div class="field"><span class="field-fk">created_by</span> (FK) → users.id</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">delivery_methods</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: DM-001)</div>
+                <div class="field">name - string</div>
+                <div class="field">description - text</div>
+                <div class="field">base_cost - decimal(10,2)</div>
+                <div class="field">is_active - boolean</div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-name">deliveries</div>
+                <div class="field"><span class="field-key">id</span> (PK) - bigint</div>
+                <div class="field">code (UK) - string (Auto: DEL-24-0001)</div>
+                <div class="field">deliverable_type - string (Polymorphic)</div>
+                <div class="field">deliverable_id - bigint (Polymorphic)</div>
+                <div class="field"><span class="field-fk">delivery_method_id</span> (FK) → delivery_methods.id</div>
+                <div class="field">status - enum (pending, preparing, in_transit, out_for_delivery, delivered, failed, cancelled)</div>
+                <div class="field">scheduled_date - date (nullable)</div>
+                <div class="field">delivered_date - date (nullable)</div>
+                <div class="field">delivery_cost - decimal(10,2)</div>
+                <div class="field">tracking_number - string (nullable)</div>
+                <div class="field">delivery_address - text (nullable)</div>
+                <div class="field">notes - text (nullable)</div>
+                <div class="field"><span class="field-fk">created_by</span> (FK) → users.id</div>
+            </div>
+        </div>
+
+        <h2>Key Relationships</h2>
+        <ul>
+            <li><strong>Polymorphic Payments:</strong> payments.payable_type + payments.payable_id can link to any entity (SalesOrder, PurchaseOrder, etc.)</li>
+            <li><strong>Polymorphic Deliveries:</strong> deliveries.deliverable_type + deliveries.deliverable_id can link to any entity</li>
+            <li><strong>Code Generation:</strong> All entities use numbering_systems for auto-generated codes</li>
+            <li><strong>User Tracking:</strong> payments and deliveries track the user who created them</li>
+        </ul>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        document.getElementById('date').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
+

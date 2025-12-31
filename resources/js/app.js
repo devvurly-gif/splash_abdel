@@ -9,6 +9,9 @@ import router from './router';
 // Import Pinia
 import { createPinia } from 'pinia';
 
+// Import i18n
+import i18n from './i18n';
+
 // Import Toastification
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
@@ -22,6 +25,7 @@ const pinia = createPinia();
 // Use plugins
 app.use(pinia);
 app.use(router);
+app.use(i18n);
 app.use(Toast, {
     transition: 'Vue-Toastification__bounce',
     maxToasts: 20,
@@ -39,6 +43,17 @@ app.use(Toast, {
     icon: true,
     rtl: false
 });
+
+// Initialize locale before mounting
+const savedLocale = localStorage.getItem('locale') || 'en';
+i18n.global.locale.value = savedLocale;
+document.documentElement.lang = savedLocale;
+document.documentElement.dir = 'ltr'; // Both English and French are LTR
+
+// Initialize theme store before mounting to apply theme immediately
+import { useThemeStore } from './stores/theme';
+const themeStore = useThemeStore();
+themeStore.initTheme();
 
 // Mount the app
 app.mount('#app');

@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'welcome' => 'Welcome',
+    'login' => 'Login',
+    'logout' => 'Logout',
+    'email' => 'Email',
+    'password' => 'Password',
+    'remember_me' => 'Remember me',
+    'dashboard' => 'Dashboard',
+    'categories' => 'Categories',
+    'brands' => 'Brands',
+    'products' => 'Products',
+    'sales' => 'Sales',
+    'purchases' => 'Purchases',
+    'stock' => 'Stock',
+    'settings' => 'Settings',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'create' => 'Create',
+    'update' => 'Update',
+    'search' => 'Search',
+    'actions' => 'Actions',
+    'success' => 'Success',
+    'error' => 'Error',
+    'warning' => 'Warning',
+    'info' => 'Info',
+];
+

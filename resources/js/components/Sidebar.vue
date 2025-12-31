@@ -1,18 +1,26 @@
 <template>
-    <aside :class="['sidebar', { 'sidebar-collapsed': isCollapsed }]">
-        <nav class="sidebar-nav">
-            <div class="sidebar-header">
-                <h2 v-if="!isCollapsed" class="sidebar-title">Menu</h2>
+    <aside :class="[
+        'min-h-screen bg-bg-elevated border-r border-surface-border flex flex-col transition-all duration-300 fixed left-0 top-16 bottom-0 overflow-y-auto z-10',
+        isCollapsed ? 'w-20' : 'w-[260px]'
+    ]">
+        <nav class="flex-1 py-6">
+            <div class="px-6 pb-4 border-b border-surface-border mb-4">
+                <h2 v-if="!isCollapsed" class="text-xs font-semibold text-text-tertiary uppercase tracking-wider m-0">Menu</h2>
             </div>
 
-            <ul class="sidebar-menu">
-                <li class="menu-item">
+            <ul class="list-none p-0 m-0">
+                <li class="my-1">
                     <router-link
                         to="/app/dashboard"
-                        class="menu-link"
-                        :class="{ 'menu-link-active': isActiveRoute('/app/dashboard') }"
+                        :class="[
+                            'flex items-center gap-3 px-6 py-3 text-text-secondary no-underline transition-all duration-200 relative',
+                            isActiveRoute('/app/dashboard') 
+                                ? 'bg-accent-primary-light text-accent-primary font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-accent-primary before:rounded-r-sm' 
+                                : 'hover:bg-surface-hover hover:text-accent-primary',
+                            isCollapsed ? 'justify-center px-3' : ''
+                        ]"
                     >
-                        <span class="menu-icon">
+                        <span class="flex items-center justify-center w-5 h-5 flex-shrink-0">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="7" height="7"/>
                                 <rect x="14" y="3" width="7" height="7"/>
@@ -20,16 +28,95 @@
                                 <rect x="3" y="14" width="7" height="7"/>
                             </svg>
                         </span>
-                        <span v-if="!isCollapsed" class="menu-text">Dashboard</span>
+                        <span v-if="!isCollapsed" class="text-sm">{{ $t('navigation.dashboard') }}</span>
+                    </router-link>
+                </li>
+                <li class="my-1">
+                    <router-link
+                        to="/app/categories"
+                        :class="[
+                            'flex items-center gap-3 px-6 py-3 text-text-secondary no-underline transition-all duration-200 relative',
+                            isActiveRoute('/app/categories') 
+                                ? 'bg-accent-primary-light text-accent-primary font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-accent-primary before:rounded-r-sm' 
+                                : 'hover:bg-surface-hover hover:text-accent-primary',
+                            isCollapsed ? 'justify-center px-3' : ''
+                        ]"
+                    >
+                        <span class="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 7h16M4 12h16M4 17h16"/>
+                            </svg>
+                        </span>
+                        <span v-if="!isCollapsed" class="text-sm">{{ $t('navigation.categories') }}</span>
+                    </router-link>
+                </li>
+                <li class="my-1">
+                    <router-link
+                        to="/app/brands"
+                        :class="[
+                            'flex items-center gap-3 px-6 py-3 text-text-secondary no-underline transition-all duration-200 relative',
+                            isActiveRoute('/app/brands') 
+                                ? 'bg-accent-primary-light text-accent-primary font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-accent-primary before:rounded-r-sm' 
+                                : 'hover:bg-surface-hover hover:text-accent-primary',
+                            isCollapsed ? 'justify-center px-3' : ''
+                        ]"
+                    >
+                        <span class="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </span>
+                        <span v-if="!isCollapsed" class="text-sm">{{ $t('navigation.brands') }}</span>
+                    </router-link>
+                </li>
+                <li class="my-1">
+                    <router-link
+                        to="/app/settings/numerotation"
+                        :class="[
+                            'flex items-center gap-3 px-6 py-3 text-text-secondary no-underline transition-all duration-200 relative',
+                            isActiveRoute('/app/settings/numerotation') 
+                                ? 'bg-accent-primary-light text-accent-primary font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-accent-primary before:rounded-r-sm' 
+                                : 'hover:bg-surface-hover hover:text-accent-primary',
+                            isCollapsed ? 'justify-center px-3' : ''
+                        ]"
+                    >
+                        <span class="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <path d="M8 8h8M8 12h8M8 16h4"/>
+                            </svg>
+                        </span>
+                        <span v-if="!isCollapsed" class="text-sm">{{ $t('navigation.numberingSystems') }}</span>
+                    </router-link>
+                </li>
+                <li class="my-1">
+                    <router-link
+                        to="/app/settings/warehouses"
+                        :class="[
+                            'flex items-center gap-3 px-6 py-3 text-text-secondary no-underline transition-all duration-200 relative',
+                            isActiveRoute('/app/settings/warehouses') 
+                                ? 'bg-accent-primary-light text-accent-primary font-semibold before:content-[\'\'] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-accent-primary before:rounded-r-sm' 
+                                : 'hover:bg-surface-hover hover:text-accent-primary',
+                            isCollapsed ? 'justify-center px-3' : ''
+                        ]"
+                    >
+                        <span class="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                                <path d="M7 14h.01M3 14h.01M11 14h.01M15 14h.01M19 14h.01"/>
+                            </svg>
+                        </span>
+                        <span v-if="!isCollapsed" class="text-sm">{{ $t('navigation.warehouses') }}</span>
                     </router-link>
                 </li>
                 <!-- Add more menu items here -->
             </ul>
         </nav>
 
-        <div class="sidebar-footer" v-if="!isCollapsed">
-            <div class="sidebar-footer-content">
-                <p class="footer-text">© 2024 Splash</p>
+        <div v-if="!isCollapsed" :class="['px-6 py-4 border-t border-surface-border mt-auto', isCollapsed ? 'px-4' : '']">
+            <div class="text-center">
+                <p :class="['text-xs text-text-tertiary m-0', isCollapsed ? 'hidden' : '']">© 2024 Splash</p>
             </div>
         </div>
     </aside>
@@ -38,6 +125,9 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
     isCollapsed: {
@@ -54,151 +144,22 @@ const isActiveRoute = (path) => {
 </script>
 
 <style scoped>
-.sidebar {
-    width: 260px;
-    min-height: 100vh;
-    background: white;
-    border-right: 1px solid #e5e7eb;
-    display: flex;
-    flex-direction: column;
-    transition: width 0.3s ease;
-    position: fixed;
-    left: 0;
-    top: 64px;
-    bottom: 0;
-    overflow-y: auto;
-    z-index: 10;
-}
-
-.sidebar-collapsed {
-    width: 80px;
-}
-
-.sidebar-nav {
-    flex: 1;
-    padding: 24px 0;
-}
-
-.sidebar-header {
-    padding: 0 24px 16px;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 16px;
-}
-
-.sidebar-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0;
-}
-
-.sidebar-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.menu-item {
-    margin: 4px 0;
-}
-
-.menu-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 24px;
-    color: #6b7280;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.menu-link:hover {
-    background-color: #f9fafb;
-    color: #667eea;
-}
-
-.menu-link-active {
-    background-color: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    font-weight: 600;
-}
-
-.menu-link-active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: #667eea;
-    border-radius: 0 2px 2px 0;
-}
-
-.menu-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-}
-
-.menu-text {
-    font-size: 14px;
-}
-
-.sidebar-collapsed .menu-text {
-    display: none;
-}
-
-.sidebar-collapsed .menu-link {
-    justify-content: center;
-    padding: 12px;
-}
-
-.sidebar-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #e5e7eb;
-    margin-top: auto;
-}
-
-.sidebar-footer-content {
-    text-align: center;
-}
-
-.footer-text {
-    font-size: 12px;
-    color: #9ca3af;
-    margin: 0;
-}
-
-.sidebar-collapsed .sidebar-footer {
-    padding: 16px;
-}
-
-.sidebar-collapsed .footer-text {
-    display: none;
-}
-
-/* Scrollbar styling */
-.sidebar::-webkit-scrollbar {
+/* Custom scrollbar styling for sidebar */
+aside::-webkit-scrollbar {
     width: 6px;
 }
 
-.sidebar::-webkit-scrollbar-track {
-    background: #f1f1f1;
+aside::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+aside::-webkit-scrollbar-thumb {
+    background: var(--border-default);
     border-radius: 3px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+aside::-webkit-scrollbar-thumb:hover {
+    background: var(--border-hover);
 }
 </style>
 
