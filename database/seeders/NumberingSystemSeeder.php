@@ -47,6 +47,14 @@ class NumberingSystemSeeder extends Seeder
                 'next_trick' => 1,
                 'isActive' => true,
             ],
+            [
+                'title' => 'Partners Numbering',
+                'domain' => 'structure',
+                'type' => 'partner',
+                'template' => 'PTN-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
             // Sale Domain
             [
                 'title' => 'Sales Invoices Numbering',
@@ -72,6 +80,22 @@ class NumberingSystemSeeder extends Seeder
                 'next_trick' => 1,
                 'isActive' => true,
             ],
+            [
+                'title' => 'Sale Delivery Notes Numbering',
+                'domain' => 'sale',
+                'type' => 'delivery_note',
+                'template' => 'BL-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
+            [
+                'title' => 'Sale Returns Numbering',
+                'domain' => 'sale',
+                'type' => 'return',
+                'template' => 'SRET-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
             // Purchase Domain
             [
                 'title' => 'Purchase Invoices Numbering',
@@ -89,6 +113,22 @@ class NumberingSystemSeeder extends Seeder
                 'next_trick' => 1,
                 'isActive' => true,
             ],
+            [
+                'title' => 'Purchase Receipts Numbering',
+                'domain' => 'purchase',
+                'type' => 'receipt',
+                'template' => 'PREC-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
+            [
+                'title' => 'Purchase Returns Numbering',
+                'domain' => 'purchase',
+                'type' => 'return',
+                'template' => 'PRET-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
             // Stock Domain
             [
                 'title' => 'Stock Transfers Numbering',
@@ -103,6 +143,30 @@ class NumberingSystemSeeder extends Seeder
                 'domain' => 'stock',
                 'type' => 'adjustment',
                 'template' => 'SA-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
+            [
+                'title' => 'Journal Stock Numbering',
+                'domain' => 'stock',
+                'type' => 'journal_stock',
+                'template' => 'JST-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
+            [
+                'title' => 'Stock Manual Entry Numbering',
+                'domain' => 'stock',
+                'type' => 'manual_entry',
+                'template' => 'SME-{YY}-{0000}',
+                'next_trick' => 1,
+                'isActive' => true,
+            ],
+            [
+                'title' => 'Stock Manual Exit Numbering',
+                'domain' => 'stock',
+                'type' => 'manual_exit',
+                'template' => 'SMX-{YY}-{0000}',
                 'next_trick' => 1,
                 'isActive' => true,
             ],

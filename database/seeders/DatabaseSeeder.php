@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class, // Must be after NumberingSystemSeeder
             BrandSeeder::class, // Must be after NumberingSystemSeeder
             WarehouseSeeder::class, // Must be after NumberingSystemSeeder
+            PartnerSeeder::class, // Must be after NumberingSystemSeeder
+            ProductSeeder::class, // Must be after CategorySeeder and BrandSeeder
+            DocumentSeeder::class, // Must be after ProductSeeder, PartnerSeeder, and WarehouseSeeder
         ]);
     }
 }

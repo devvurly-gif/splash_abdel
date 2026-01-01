@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\NumberingSystem;
+
+class Product extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'code',
+        'name',
+        'description',
+        'category_id',
+        'brand_id',
+        'sku',
+        'barcode',
+        'purchase_price',
+        'sale_price',
+        'min_stock',
+        'max_stock',
+        'unit',
+        'status',
+    ];
+
+    protected $casts = [
+        'purchase_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+        'min_stock' => 'integer',
+        'max_stock' => 'integer',
+        'status' => 'boolean',
+    ];
+
+    protected $guarded = ['code'];
+
+    // Relations
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function documentLines(): HasMany
+    {
+        return $this->hasMany(DocumentLine::class);
+    }
+
+    public function journalEntries(): HasMany
+    {
+        return $this->hasMany(JournalStock::class);
+    }
+
+    public function stockBalances(): HasMany
+    {
+        return $this->hasMany(StockBalance::class);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    public function scopeInactive($query)
+    {
+        return $query->where('status', false);
+    }
+
+    // Boot method pour auto-générer le code
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (!$product->code) {
+                $product->code = static::generateCode();
+            }
+        });
+    }
+
+    public static function generateCode(): string
+    {
+        $numberingSystem = NumberingSystem::byDomainAndType(
+            NumberingSystem::DOMAIN_STRUCTURE,
+            'product'
+        )->active()->first();
+
+        if (!$numberingSystem) {
+            return 'PDT-' . str_pad((Product::count() + 1), 5, '0', STR_PAD_LEFT);
+        }
+
+        return $numberingSystem->getNextNumber();
+    }
+}

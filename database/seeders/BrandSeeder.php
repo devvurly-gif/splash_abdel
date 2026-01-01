@@ -49,7 +49,10 @@ class BrandSeeder extends Seeder
         ];
 
         foreach ($brands as $brandData) {
-            Brand::create($brandData);
+            Brand::firstOrCreate(
+                ['title' => $brandData['title']],
+                $brandData
+            );
             // Code will be auto-generated: BR-001, BR-002, etc.
         }
 

@@ -49,7 +49,10 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $categoryData) {
-            Category::create($categoryData);
+            Category::firstOrCreate(
+                ['title' => $categoryData['title']],
+                $categoryData
+            );
             // Code will be auto-generated: CAT-0001, CAT-0002, etc.
         }
 

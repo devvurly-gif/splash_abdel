@@ -37,7 +37,10 @@ class WarehouseSeeder extends Seeder
         ];
 
         foreach ($warehouses as $warehouseData) {
-            Warehouse::create($warehouseData);
+            Warehouse::firstOrCreate(
+                ['title' => $warehouseData['title']],
+                $warehouseData
+            );
             // Code will be auto-generated: WH-0001, WH-0002, etc.
         }
     }
