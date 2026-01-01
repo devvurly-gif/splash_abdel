@@ -7,6 +7,9 @@ use App\Http\Controllers\NumberingSystemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\JournalStockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +47,17 @@ Route::middleware([\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreSta
     
     // Warehouse routes
     Route::apiResource('warehouses', WarehouseController::class);
+    
+    // Partner routes
+    Route::apiResource('partners', PartnerController::class);
+    
+    // Document routes
+    Route::apiResource('documents', DocumentController::class);
+    Route::post('/documents/{id}/validate', [DocumentController::class, 'validateDocument']);
+    Route::post('/documents/{id}/cancel', [DocumentController::class, 'cancel']);
+    
+    // Journal Stock routes
+    Route::get('/journal-stock', [JournalStockController::class, 'index']);
+    Route::get('/journal-stock/{id}', [JournalStockController::class, 'show']);
+    Route::get('/journal-stock/history', [JournalStockController::class, 'history']);
 });

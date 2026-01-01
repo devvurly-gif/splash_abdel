@@ -9,6 +9,11 @@ const CategoriesIndex = () => import('../pages/secure/categories/index.vue');
 const BrandsIndex = () => import('../pages/secure/brands/index.vue');
 const NumberingSystemsIndex = () => import('../pages/secure/settings/numerotation/index.vue');
 const WarehousesIndex = () => import('../pages/secure/settings/warehouses/index.vue');
+const PartnersIndex = () => import('../pages/secure/settings/partners/index.vue');
+const SaleDocumentsIndex = () => import('../pages/secure/documents/sale/index.vue');
+const PurchaseDocumentsIndex = () => import('../pages/secure/documents/purchase/index.vue');
+const StockDocumentsIndex = () => import('../pages/secure/documents/stock/index.vue');
+const StockMovementsIndex = () => import('../pages/secure/stock/movements/index.vue');
 
 const routes = [
     {
@@ -67,6 +72,46 @@ const routes = [
                 }
             },
             {
+                path: 'documents/sale',
+                name: 'sale-documents',
+                component: SaleDocumentsIndex,
+                meta: {
+                    title: 'Sales Documents',
+                    requiresAuth: true,
+                    icon: 'sales'
+                }
+            },
+            {
+                path: 'documents/purchase',
+                name: 'purchase-documents',
+                component: PurchaseDocumentsIndex,
+                meta: {
+                    title: 'Purchase Documents',
+                    requiresAuth: true,
+                    icon: 'purchases'
+                }
+            },
+            {
+                path: 'documents/stock',
+                name: 'stock-documents',
+                component: StockDocumentsIndex,
+                meta: {
+                    title: 'Stock Documents',
+                    requiresAuth: true,
+                    icon: 'stock'
+                }
+            },
+            {
+                path: 'stock/movements',
+                name: 'stock-movements',
+                component: StockMovementsIndex,
+                meta: {
+                    title: 'Stock Movements',
+                    requiresAuth: true,
+                    icon: 'stock'
+                }
+            },
+            {
                 path: 'settings/numerotation',
                 name: 'numbering-systems',
                 component: NumberingSystemsIndex,
@@ -82,6 +127,16 @@ const routes = [
                 component: WarehousesIndex,
                 meta: {
                     title: 'Warehouses',
+                    requiresAuth: true,
+                    icon: 'settings'
+                }
+            },
+            {
+                path: 'settings/partners',
+                name: 'partners',
+                component: PartnersIndex,
+                meta: {
+                    title: 'Partners',
                     requiresAuth: true,
                     icon: 'settings'
                 }
