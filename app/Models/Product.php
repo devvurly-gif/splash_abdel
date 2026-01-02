@@ -13,27 +13,26 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
         'name',
-        'description',
+        'ean13',
         'category_id',
         'brand_id',
-        'sku',
-        'barcode',
         'purchase_price',
         'sale_price',
-        'min_stock',
-        'max_stock',
+        'description',
+        'tax_id',
         'unit',
-        'status',
+        'isactive',
+        'onPromo',
+        'isFeatured',
     ];
 
     protected $casts = [
         'purchase_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
-        'min_stock' => 'integer',
-        'max_stock' => 'integer',
-        'status' => 'boolean',
+        'isactive' => 'boolean',
+        'onPromo' => 'boolean',
+        'isFeatured' => 'boolean',
     ];
 
     protected $guarded = ['code'];
@@ -64,15 +63,25 @@ class Product extends Model
         return $this->hasMany(StockBalance::class);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->ordered();
+    }
+
+    public function primaryImage(): HasMany
+    {
+        return $this->hasMany(ProductImage::class)->where('isprimary', true);
+    }
+
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('status', true);
+        return $query->where('isactive', true);
     }
 
     public function scopeInactive($query)
     {
-        return $query->where('status', false);
+        return $query->where('isactive', false);
     }
 
     // Boot method pour auto-générer le code

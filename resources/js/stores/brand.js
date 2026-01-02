@@ -9,7 +9,7 @@ export const useBrandStore = defineStore('brand', () => {
     const pagination = ref({
         current_page: 1,
         last_page: 1,
-        per_page: 15,
+        per_page: 10,
         total: 0
     });
 
@@ -49,7 +49,7 @@ export const useBrandStore = defineStore('brand', () => {
 
         try {
             const queryParams = new URLSearchParams({
-                per_page: params.per_page || 15,
+                per_page: params.per_page || 10,
                 page: params.page || 1,
                 ...(params.search && { search: params.search }),
                 ...(params.status !== undefined && params.status !== '' && { status: params.status ? 1 : 0 })
@@ -71,7 +71,7 @@ export const useBrandStore = defineStore('brand', () => {
                     pagination.value = {
                         current_page: responseData.current_page || 1,
                         last_page: responseData.last_page || 1,
-                        per_page: responseData.per_page || 15,
+                        per_page: responseData.per_page || 10,
                         total: responseData.total || 0
                     };
                 } else if (Array.isArray(responseData)) {
@@ -84,7 +84,7 @@ export const useBrandStore = defineStore('brand', () => {
                     };
                 } else {
                     brands.value = [];
-                    pagination.value = { current_page: 1, last_page: 1, per_page: 15, total: 0 };
+                    pagination.value = { current_page: 1, last_page: 1, per_page: 10, total: 0 };
                 }
                 
                 console.log('Brands fetched successfully:', brands.value.length, 'items');
@@ -92,7 +92,7 @@ export const useBrandStore = defineStore('brand', () => {
             } else {
                 console.error('Failed to fetch brands:', data);
                 brands.value = [];
-                pagination.value = { current_page: 1, last_page: 1, per_page: 15, total: 0 };
+                pagination.value = { current_page: 1, last_page: 1, per_page: 10, total: 0 };
                 return { success: false, error: data.message || 'Failed to fetch brands' };
             }
         } catch (err) {

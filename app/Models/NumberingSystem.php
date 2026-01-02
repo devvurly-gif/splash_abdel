@@ -116,13 +116,18 @@ class NumberingSystem extends Model
 
     /**
      * Get the next number and increment next_trick.
+     * Note: This method should be called within a transaction with lockForUpdate()
+     * to prevent race conditions.
      *
      * @return string
      */
     public function getNextNumber(): string
     {
         $number = $this->generateNextNumber();
+        // Use increment to atomically update the counter
         $this->increment('next_trick');
+        // Refresh to ensure we have the latest value
+        $this->refresh();
         return $number;
     }
 

@@ -16,8 +16,17 @@ import i18n from './i18n';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 
+// Import and initialize axios loader configuration
+import './config/loader';
+
+// Import global components
+import Pagination from './components/Pagination.vue';
+
 // Create Vue app
 const app = createApp(App);
+
+// Register global components
+app.component('Pagination', Pagination);
 
 // Create Pinia instance
 const pinia = createPinia();

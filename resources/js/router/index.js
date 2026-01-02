@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useLoadingStore } from '@/stores/loading';
 
 // Lazy load components
 const Login = () => import('../pages/auth/login.vue');
@@ -7,13 +8,10 @@ const AppTemplate = () => import('../pages/secure/AppTemplate.vue');
 const Dashboard = () => import('../pages/secure/dashboard.vue');
 const CategoriesIndex = () => import('../pages/secure/categories/index.vue');
 const BrandsIndex = () => import('../pages/secure/brands/index.vue');
+const ProductsIndex = () => import('../pages/secure/products/index.vue');
+const ProductNew = () => import('../pages/secure/products/new.vue');
+const ProductEdit = () => import('../pages/secure/products/edit.vue');
 const NumberingSystemsIndex = () => import('../pages/secure/settings/numerotation/index.vue');
-const WarehousesIndex = () => import('../pages/secure/settings/warehouses/index.vue');
-const PartnersIndex = () => import('../pages/secure/settings/partners/index.vue');
-const SaleDocumentsIndex = () => import('../pages/secure/documents/sale/index.vue');
-const PurchaseDocumentsIndex = () => import('../pages/secure/documents/purchase/index.vue');
-const StockDocumentsIndex = () => import('../pages/secure/documents/stock/index.vue');
-const StockMovementsIndex = () => import('../pages/secure/stock/movements/index.vue');
 
 const routes = [
     {
@@ -72,43 +70,31 @@ const routes = [
                 }
             },
             {
-                path: 'documents/sale',
-                name: 'sale-documents',
-                component: SaleDocumentsIndex,
+                path: 'products',
+                name: 'products',
+                component: ProductsIndex,
                 meta: {
-                    title: 'Sales Documents',
+                    title: 'Products',
                     requiresAuth: true,
-                    icon: 'sales'
+                    icon: 'products'
                 }
             },
             {
-                path: 'documents/purchase',
-                name: 'purchase-documents',
-                component: PurchaseDocumentsIndex,
+                path: 'products/new',
+                name: 'products-new',
+                component: ProductNew,
                 meta: {
-                    title: 'Purchase Documents',
-                    requiresAuth: true,
-                    icon: 'purchases'
+                    title: 'Create Product',
+                    requiresAuth: true
                 }
             },
             {
-                path: 'documents/stock',
-                name: 'stock-documents',
-                component: StockDocumentsIndex,
+                path: 'products/:id/edit',
+                name: 'products-edit',
+                component: ProductEdit,
                 meta: {
-                    title: 'Stock Documents',
-                    requiresAuth: true,
-                    icon: 'stock'
-                }
-            },
-            {
-                path: 'stock/movements',
-                name: 'stock-movements',
-                component: StockMovementsIndex,
-                meta: {
-                    title: 'Stock Movements',
-                    requiresAuth: true,
-                    icon: 'stock'
+                    title: 'Edit Product',
+                    requiresAuth: true
                 }
             },
             {
@@ -120,27 +106,8 @@ const routes = [
                     requiresAuth: true,
                     icon: 'settings'
                 }
-            },
-            {
-                path: 'settings/warehouses',
-                name: 'warehouses',
-                component: WarehousesIndex,
-                meta: {
-                    title: 'Warehouses',
-                    requiresAuth: true,
-                    icon: 'settings'
-                }
-            },
-            {
-                path: 'settings/partners',
-                name: 'partners',
-                component: PartnersIndex,
-                meta: {
-                    title: 'Partners',
-                    requiresAuth: true,
-                    icon: 'settings'
-                }
             }
+            
         ]
     },
     {
@@ -166,6 +133,12 @@ const router = createRouter({
 // Navigation guards
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
+    const loadingStore = useLoadingStore();
+    
+    // Show loader when navigating to a different route
+    if (from.name && to.name !== from.name) {
+        loadingStore.startLoading();
+    }
     
     // Check if route requires authentication
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
@@ -179,6 +152,7 @@ router.beforeEach(async (to, from, next) => {
     if (requiresAuth && !authStore.isAuthenticated) {
         const isAuthenticated = await authStore.checkAuth();
         if (!isAuthenticated) {
+            loadingStore.stopLoading();
             // Redirect to login if not authenticated
             next({
                 name: 'login',
@@ -190,6 +164,7 @@ router.beforeEach(async (to, from, next) => {
     
     // Redirect authenticated users away from login page
     if (!requiresAuth && authStore.isAuthenticated && to.name === 'login') {
+        loadingStore.stopLoading();
         next({ name: 'dashboard' });
         return;
     }
@@ -202,6 +177,15 @@ router.beforeEach(async (to, from, next) => {
     }
     
     next();
+});
+
+// Note: Loader will be hidden by AppTemplate after page is fully rendered
+// This is handled in the onPageRendered callback
+
+// Hide loader if navigation fails
+router.onError(() => {
+    const loadingStore = useLoadingStore();
+    loadingStore.stopLoading();
 });
 
 export default router;

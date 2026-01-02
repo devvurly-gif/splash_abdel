@@ -9,7 +9,7 @@ export const useNumberingSystemStore = defineStore('numberingSystem', () => {
     const pagination = ref({
         current_page: 1,
         last_page: 1,
-        per_page: 15,
+        per_page: 10,
         total: 0
     });
 
@@ -49,7 +49,7 @@ export const useNumberingSystemStore = defineStore('numberingSystem', () => {
 
         try {
             const queryParams = new URLSearchParams({
-                per_page: params.per_page || 15,
+                per_page: params.per_page || 10,
                 page: params.page || 1,
                 ...(params.search && { search: params.search }),
                 ...(params.domain && { domain: params.domain }),
@@ -74,7 +74,7 @@ export const useNumberingSystemStore = defineStore('numberingSystem', () => {
                     pagination.value = {
                         current_page: responseData.current_page || 1,
                         last_page: responseData.last_page || 1,
-                        per_page: responseData.per_page || 15,
+                        per_page: responseData.per_page || 10,
                         total: responseData.total || 0
                     };
                 } else if (Array.isArray(responseData)) {

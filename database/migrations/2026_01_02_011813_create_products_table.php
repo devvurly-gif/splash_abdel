@@ -15,22 +15,27 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->string('ean13')->nullable();
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->foreignId('brand_id')->nullable()->constrained('brands')->onDelete('set null');
-            $table->string('sku')->nullable()->unique();
-            $table->string('barcode')->nullable()->unique();
-            $table->decimal('purchase_price', 15, 2)->default(0);
-            $table->decimal('sale_price', 15, 2)->default(0);
-            $table->integer('min_stock')->default(0);
-            $table->integer('max_stock')->nullable();
-            $table->string('unit')->default('pcs'); // unité de mesure
-            $table->boolean('status')->default(true);
+            $table->decimal('purchase_price', 10, 2)->default(0);
+            $table->decimal('sale_price', 10, 2)->default(0);
+            $table->text('description')->nullable();
+            $table->foreignId('tax_id')->nullable();
+            $table->string('unit')->nullable();
+            $table->boolean('isactive')->default(true);
+            $table->boolean('onPromo')->default(false);
+            $table->boolean('isFeatured')->default(false);
             $table->timestamps();
             
+            // Indexes
             $table->index('code');
-            $table->index('status');
-            $table->index(['category_id', 'brand_id']);
+            $table->index('name');
+            $table->index('category_id');
+            $table->index('brand_id');
+            $table->index('isactive');
+            $table->index('onPromo');
+            $table->index('isFeatured');
         });
     }
 

@@ -8,6 +8,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\PartnerController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\JournalStockController;
 
@@ -51,10 +53,22 @@ Route::middleware([\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreSta
     // Partner routes
     Route::apiResource('partners', PartnerController::class);
     
+    // Product routes
+    Route::apiResource('products', ProductController::class);
+    
+    // Product Image routes (nested under products)
+    Route::get('/products/{productId}/images', [ProductImageController::class, 'index']);
+    Route::post('/products/{productId}/images', [ProductImageController::class, 'store']);
+    Route::post('/products/{productId}/images/upload-multiple', [ProductImageController::class, 'uploadMultiple']);
+    Route::get('/products/{productId}/images/{id}', [ProductImageController::class, 'show']);
+    Route::put('/products/{productId}/images/{id}', [ProductImageController::class, 'update']);
+    Route::delete('/products/{productId}/images/{id}', [ProductImageController::class, 'destroy']);
+    
     // Document routes
     Route::apiResource('documents', DocumentController::class);
     Route::post('/documents/{id}/validate', [DocumentController::class, 'validateDocument']);
     Route::post('/documents/{id}/cancel', [DocumentController::class, 'cancel']);
+    Route::get('/documents/preview-code', [DocumentController::class, 'previewCode']);
     
     // Journal Stock routes
     Route::get('/journal-stock', [JournalStockController::class, 'index']);

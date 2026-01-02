@@ -86,25 +86,16 @@
             </table>
         </div>
 
-        <div v-if="warehouseStore.pagination.last_page > 1" class="flex justify-center items-center gap-4 mt-6">
-            <button
-                @click="changePage(warehouseStore.pagination.current_page - 1)"
-                :disabled="warehouseStore.pagination.current_page === 1"
-                class="px-4 py-2 border-2 border-surface-border rounded-lg bg-bg-primary text-text-primary cursor-pointer transition-all duration-200 hover:border-accent-primary hover:text-accent-primary hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {{ $t('common.previous') }}
-            </button>
-            <span class="text-text-secondary text-sm">
-                {{ $t('common.page') }} {{ warehouseStore.pagination.current_page }} {{ $t('common.of') }} {{ warehouseStore.pagination.last_page }}
-            </span>
-            <button
-                @click="changePage(warehouseStore.pagination.current_page + 1)"
-                :disabled="warehouseStore.pagination.current_page === warehouseStore.pagination.last_page"
-                class="px-4 py-2 border-2 border-surface-border rounded-lg bg-bg-primary text-text-primary cursor-pointer transition-all duration-200 hover:border-accent-primary hover:text-accent-primary hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {{ $t('common.next') }}
-            </button>
-        </div>
+        <Pagination
+            v-if="warehouseStore.pagination && (warehouseStore.pagination.last_page > 1 || perPage !== 10)"
+            :current-page="warehouseStore.pagination?.current_page || 1"
+            :total-pages="warehouseStore.pagination?.last_page || 1"
+            :total-items="warehouseStore.pagination?.total || 0"
+            :per-page="perPage"
+            :show-total="true"
+            @page-change="changePage"
+            @per-page-change="changePerPage"
+        />
 
         <WarehouseModal
             v-if="showModal"
@@ -131,10 +122,11 @@ const showModal = ref(false);
 const editingWarehouse = ref(null);
 const searchQuery = ref('');
 const statusFilter = ref('');
+const perPage = ref(10);
 let searchTimeout = null;
 
 onMounted(async () => {
-    const result = await warehouseStore.fetchWarehouses();
+    const result = await warehouseStore.fetchWarehouses({ per_page: perPage.value });
     if (!result.success) {
         console.error('Failed to fetch warehouses:', result.error);
     } else {
@@ -169,6 +161,8 @@ const handleSearch = () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         warehouseStore.fetchWarehouses({
+            per_page: perPage.value,
+            page: 1,
             search: searchQuery.value,
             status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
         });
@@ -177,6 +171,8 @@ const handleSearch = () => {
 
 const handleFilter = () => {
     warehouseStore.fetchWarehouses({
+        per_page: perPage.value,
+        page: 1,
         search: searchQuery.value,
         status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
     });
@@ -184,7 +180,18 @@ const handleFilter = () => {
 
 const changePage = (page) => {
     warehouseStore.fetchWarehouses({
+        per_page: perPage.value,
         page,
+        search: searchQuery.value,
+        status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
+    });
+};
+
+const changePerPage = (newPerPage) => {
+    perPage.value = newPerPage;
+    warehouseStore.fetchWarehouses({
+        per_page: newPerPage,
+        page: 1,
         search: searchQuery.value,
         status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
     });
