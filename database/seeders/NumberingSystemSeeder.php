@@ -43,7 +43,7 @@ class NumberingSystemSeeder extends Seeder
                 'title' => 'Warehouses Numbering',
                 'domain' => 'structure',
                 'type' => 'warehouse',
-                'template' => 'WH-{0000}',
+                'template' => 'WH-{00}',
                 'next_trick' => 1,
                 'isActive' => true,
             ],

@@ -49,12 +49,14 @@ Route::middleware([\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreSta
     
     // Warehouse routes
     Route::apiResource('warehouses', WarehouseController::class);
+    Route::get('/warehouses/{id}/products', [WarehouseController::class, 'products']);
     
     // Partner routes
     Route::apiResource('partners', PartnerController::class);
     
     // Product routes
     Route::apiResource('products', ProductController::class);
+    Route::get('/products/{id}/warehouses', [ProductController::class, 'warehouses']);
     
     // Product Image routes (nested under products)
     Route::get('/products/{productId}/images', [ProductImageController::class, 'index']);
@@ -74,4 +76,13 @@ Route::middleware([\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreSta
     Route::get('/journal-stock', [JournalStockController::class, 'index']);
     Route::get('/journal-stock/{id}', [JournalStockController::class, 'show']);
     Route::get('/journal-stock/history', [JournalStockController::class, 'history']);
+    
+    // Users route (for dropdowns)
+    Route::get('/users', function (Request $request) {
+        $users = \App\Models\User::select('id', 'name', 'email')->orderBy('name')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
+    });
 });

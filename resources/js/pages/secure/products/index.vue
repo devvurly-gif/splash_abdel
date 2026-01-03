@@ -49,18 +49,19 @@
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('product.category') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('product.brand') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('product.salePrice') }}</th>
+                        <th class="p-4 text-right font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('product.stock') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('product.status') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="productStore.loading">
-                        <td colspan="8" class="text-center p-10 text-text-tertiary">
+                        <td colspan="9" class="text-center p-10 text-text-tertiary">
                             <span>{{ $t('common.loading') }}</span>
                         </td>
                     </tr>
                     <tr v-else-if="productStore.products.length === 0">
-                        <td colspan="8" class="text-center p-10 text-text-tertiary">
+                        <td colspan="9" class="text-center p-10 text-text-tertiary">
                             <span>{{ $t('common.noData') }}</span>
                         </td>
                     </tr>
@@ -85,6 +86,9 @@
                         <td class="p-4 border-b border-surface-border text-text-primary">{{ product.category?.title || '-' }}</td>
                         <td class="p-4 border-b border-surface-border text-text-primary">{{ product.brand?.title || '-' }}</td>
                         <td class="p-4 border-b border-surface-border text-text-primary">{{ formatPrice(product.sale_price) }}</td>
+                        <td class="p-4 border-b border-surface-border text-text-primary text-right font-semibold">
+                            {{ product.total_stock || 0 }}
+                        </td>
                         <td class="p-4 border-b border-surface-border text-text-primary">
                             <span :class="[
                                 'inline-block px-3 py-1 rounded-xl text-xs font-semibold',
@@ -97,6 +101,12 @@
                         </td>
                         <td class="p-4 border-b border-surface-border text-text-primary">
                             <div class="flex gap-2">
+                                <button @click="openWarehousesModal(product)" class="p-1.5 border-none rounded-md cursor-pointer transition-all duration-200 flex items-center justify-center bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/15 dark:hover:bg-green-900/25" :title="$t('product.viewWarehouses')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                        <polyline points="9 22 9 12 15 12 15 22"/>
+                                    </svg>
+                                </button>
                                 <router-link :to="`/app/products/${product.id}/edit`" class="p-1.5 border-none rounded-md cursor-pointer transition-all duration-200 flex items-center justify-center bg-blue-100 text-accent-info hover:bg-blue-200 dark:bg-blue-900/15 dark:hover:bg-blue-900/25 no-underline" :title="$t('common.edit')">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -127,6 +137,12 @@
             @per-page-change="changePerPage"
         />
 
+        <ProductWarehousesModal
+            v-if="showWarehousesModal"
+            :show="showWarehousesModal"
+            :product="selectedProduct"
+            @close="closeWarehousesModal"
+        />
     </div>
 </template>
 
@@ -137,6 +153,7 @@ import { useCategoryStore } from '@/stores/category';
 import { useBrandStore } from '@/stores/brand';
 import { useToast } from '@/composables/useToast';
 import { useI18n } from 'vue-i18n';
+import ProductWarehousesModal from './warehouses-modal.vue';
 
 const productStore = useProductStore();
 const categoryStore = useCategoryStore();
@@ -151,6 +168,8 @@ const statusFilter = ref('');
 const perPage = ref(10);
 const categories = ref([]);
 const brands = ref([]);
+const showWarehousesModal = ref(false);
+const selectedProduct = ref(null);
 let searchTimeout = null;
 
 onMounted(async () => {
@@ -246,6 +265,16 @@ const getPrimaryImage = (product) => {
     const primaryImage = product.images.find(img => img.isprimary === true);
     // If no primary image, return first image
     return primaryImage || (product.images.length > 0 ? product.images[0] : null);
+};
+
+const openWarehousesModal = (product) => {
+    selectedProduct.value = product;
+    showWarehousesModal.value = true;
+};
+
+const closeWarehousesModal = () => {
+    showWarehousesModal.value = false;
+    selectedProduct.value = null;
 };
 </script>
 

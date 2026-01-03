@@ -1,6 +1,6 @@
 <template>
     <div v-if="show" class="fixed inset-0 bg-black/60 dark:bg-black/80 flex items-center justify-center z-[1000] p-5" @click.self="handleClose">
-        <div class="bg-bg-elevated rounded-xl w-full max-w-[500px] max-h-[90vh] overflow-y-auto shadow-xl border border-surface-border">
+        <div class="bg-bg-elevated rounded-xl w-full max-w-[600px] max-h-[90vh] overflow-y-auto shadow-xl border border-surface-border">
             <div class="flex justify-between items-center p-6 border-b border-surface-border">
                 <h2 class="text-xl font-semibold text-text-primary m-0">
                     {{ warehouse ? $t('warehouse.edit') : $t('warehouse.create') }}
@@ -42,18 +42,55 @@
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-sm font-medium text-text-secondary mb-2" for="status">
-                        {{ $t('warehouse.status') }}
+                    <label class="block text-sm font-medium text-text-secondary mb-2" for="type">
+                        {{ $t('warehouse.type') }} <span class="text-accent-error">*</span>
+                    </label>
+                    <select
+                        id="type"
+                        v-model="form.type"
+                        required
+                        class="w-full py-2.5 px-3 border-2 rounded-lg text-sm bg-bg-primary text-text-primary transition-all duration-200 focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-accent-primary-light cursor-pointer"
+                        :class="errors.type ? 'border-accent-error focus:ring-red-200' : 'border-surface-border'"
+                    >
+                        <option value="">{{ $t('warehouse.selectType') }}</option>
+                        <option value="warehouse">{{ $t('warehouse.typeWarehouse') }}</option>
+                        <option value="store">{{ $t('warehouse.typeStore') }}</option>
+                        <option value="tank">{{ $t('warehouse.typeTank') }}</option>
+                    </select>
+                    <span v-if="errors.type" class="block mt-1 text-xs text-accent-error">{{ errors.type }}</span>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-text-secondary mb-2" for="inchargeOf">
+                        {{ $t('warehouse.inchargeOf') }}
+                    </label>
+                    <select
+                        id="inchargeOf"
+                        v-model="form.inchargeOf"
+                        class="w-full py-2.5 px-3 border-2 rounded-lg text-sm bg-bg-primary text-text-primary transition-all duration-200 focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-accent-primary-light cursor-pointer"
+                        :class="errors.inchargeOf ? 'border-accent-error focus:ring-red-200' : 'border-surface-border'"
+                    >
+                        <option :value="null">{{ $t('warehouse.noIncharge') }}</option>
+                        <option v-for="user in users" :key="user.id" :value="user.id">
+                            {{ user.name }} ({{ user.email }})
+                        </option>
+                    </select>
+                    <span v-if="errors.inchargeOf" class="block mt-1 text-xs text-accent-error">{{ errors.inchargeOf }}</span>
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-text-secondary mb-2" for="isprincipal">
+                        {{ $t('warehouse.isprincipal') }}
                     </label>
                     <div class="flex items-center gap-2">
                         <input
-                            id="status"
-                            v-model="form.status"
+                            id="isprincipal"
+                            v-model="form.isprincipal"
                             type="checkbox"
                             class="w-[18px] h-[18px] cursor-pointer"
                         />
-                        <label for="status" class="text-sm text-text-secondary cursor-pointer">
-                            {{ $t('warehouse.isActive') }}
+                        <label for="isprincipal" class="text-sm text-text-secondary cursor-pointer">
+                            {{ $t('warehouse.markAsPrincipal') }}
                         </label>
                     </div>
                 </div>
@@ -73,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useWarehouseStore } from '@/stores/warehouse';
 import { useToast } from '@/composables/useToast';
 import { useI18n } from 'vue-i18n';
@@ -97,46 +134,112 @@ const { t } = useI18n();
 
 const form = ref({
     title: '',
-    status: true
+    type: 'warehouse',
+    inchargeOf: null,
+    isprincipal: false
 });
 
 const errors = ref({});
+const users = ref([]);
+const loadingUsers = ref(false);
+
+// Helper function to get CSRF token
+const getCsrfToken = () => {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+};
+
+// Helper function to get headers
+const getHeaders = () => {
+    return {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': getCsrfToken()
+    };
+};
+
+// Fetch users for dropdown
+const fetchUsers = async () => {
+    if (users.value.length > 0) return; // Already loaded
+    
+    loadingUsers.value = true;
+    try {
+        // Try to fetch from /api/users endpoint, or use a simple approach
+        // For now, we'll create a simple endpoint or use existing user data
+        const response = await fetch('/api/users', {
+            method: 'GET',
+            headers: getHeaders(),
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && Array.isArray(data.data)) {
+                users.value = data.data;
+            } else if (Array.isArray(data)) {
+                users.value = data;
+            }
+        }
+    } catch (err) {
+        console.error('Failed to fetch users:', err);
+        // If endpoint doesn't exist, we'll handle it gracefully
+        users.value = [];
+    } finally {
+        loadingUsers.value = false;
+    }
+};
+
+onMounted(() => {
+    fetchUsers();
+});
 
 watch(() => props.warehouse, (newWarehouse) => {
     if (newWarehouse) {
         form.value = {
             title: newWarehouse.title || '',
-            status: newWarehouse.status !== undefined ? newWarehouse.status : true
+            type: newWarehouse.type || 'warehouse',
+            inchargeOf: newWarehouse.inchargeOf || null,
+            isprincipal: newWarehouse.isprincipal !== undefined ? newWarehouse.isprincipal : false
         };
     } else {
         form.value = {
             title: '',
-            status: true
+            type: 'warehouse',
+            inchargeOf: null,
+            isprincipal: false
         };
     }
     errors.value = {};
 }, { immediate: true });
 
 watch(() => props.show, (isShow) => {
-    if (isShow && props.warehouse) {
-        form.value = {
-            title: props.warehouse.title || '',
-            status: props.warehouse.status !== undefined ? props.warehouse.status : true
-        };
-    } else if (isShow && !props.warehouse) {
-        form.value = {
-            title: '',
-            status: true
-        };
+    if (isShow) {
+        fetchUsers();
+        if (props.warehouse) {
+            form.value = {
+                title: props.warehouse.title || '',
+                type: props.warehouse.type || 'warehouse',
+                inchargeOf: props.warehouse.inchargeOf || null,
+                isprincipal: props.warehouse.isprincipal !== undefined ? props.warehouse.isprincipal : false
+            };
+        } else {
+            form.value = {
+                title: '',
+                type: 'warehouse',
+                inchargeOf: null,
+                isprincipal: false
+            };
+        }
+        errors.value = {};
     }
-    errors.value = {};
 });
 
 const handleClose = () => {
     emit('close');
     form.value = {
         title: '',
-        status: true
+        type: 'warehouse',
+        inchargeOf: null,
+        isprincipal: false
     };
     errors.value = {};
 };
@@ -149,9 +252,16 @@ const handleSubmit = async () => {
         return;
     }
 
+    if (!form.value.type) {
+        errors.value.type = t('warehouse.typeRequired');
+        return;
+    }
+
     const warehouseData = {
         title: form.value.title.trim(),
-        status: form.value.status
+        type: form.value.type,
+        inchargeOf: form.value.inchargeOf || null,
+        isprincipal: form.value.isprincipal
     };
 
     let result;
@@ -172,4 +282,3 @@ const handleSubmit = async () => {
     }
 };
 </script>
-

@@ -24,10 +24,11 @@
                     class="w-full py-2.5 pl-10 pr-3 border-2 border-surface-border rounded-lg text-sm bg-bg-primary text-text-primary transition-all duration-200 focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-accent-primary-light placeholder:text-text-tertiary"
                 />
             </div>
-            <select v-model="statusFilter" @change="handleFilter" class="py-2.5 px-4 border-2 border-surface-border rounded-lg text-sm cursor-pointer bg-bg-primary text-text-primary focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-accent-primary-light">
-                <option value="">{{ $t('common.all') }}</option>
-                <option value="1">{{ $t('common.active') }}</option>
-                <option value="0">{{ $t('common.inactive') }}</option>
+            <select v-model="typeFilter" @change="handleFilter" class="py-2.5 px-4 border-2 border-surface-border rounded-lg text-sm cursor-pointer bg-bg-primary text-text-primary focus:outline-none focus:border-border-focus focus:ring-2 focus:ring-accent-primary-light">
+                <option value="">{{ $t('warehouse.allTypes') }}</option>
+                <option value="warehouse">{{ $t('warehouse.typeWarehouse') }}</option>
+                <option value="store">{{ $t('warehouse.typeStore') }}</option>
+                <option value="tank">{{ $t('warehouse.typeTank') }}</option>
             </select>
         </div>
 
@@ -37,18 +38,20 @@
                     <tr>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.code') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.title') }}</th>
-                        <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.status') }}</th>
+                        <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.type') }}</th>
+                        <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.isprincipal') }}</th>
+                        <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('warehouse.inchargeOf') }}</th>
                         <th class="p-4 text-left font-semibold text-text-secondary text-sm border-b-2 border-surface-border">{{ $t('common.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="warehouseStore.loading">
-                        <td colspan="4" class="text-center p-10 text-text-tertiary">
+                        <td colspan="6" class="text-center p-10 text-text-tertiary">
                             <span>{{ $t('common.loading') }}</span>
                         </td>
                     </tr>
                     <tr v-else-if="warehouseStore.warehouses.length === 0">
-                        <td colspan="4" class="text-center p-10 text-text-tertiary">
+                        <td colspan="6" class="text-center p-10 text-text-tertiary">
                             <span>{{ $t('common.noData') }}</span>
                         </td>
                     </tr>
@@ -56,17 +59,29 @@
                         <td class="p-4 border-b border-surface-border text-text-primary">{{ warehouse.code }}</td>
                         <td class="p-4 border-b border-surface-border text-text-primary">{{ warehouse.title }}</td>
                         <td class="p-4 border-b border-surface-border text-text-primary">
-                            <span :class="[
-                                'inline-block px-3 py-1 rounded-xl text-xs font-semibold',
-                                warehouse.status 
-                                    ? 'bg-green-100 text-accent-success dark:bg-green-900/20 dark:text-accent-success' 
-                                    : 'bg-red-100 text-accent-error dark:bg-red-900/20 dark:text-accent-error'
-                            ]">
-                                {{ warehouse.status ? $t('common.active') : $t('common.inactive') }}
+                            <span class="inline-block px-3 py-1 rounded-xl text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+                                {{ warehouse.type }}
                             </span>
                         </td>
                         <td class="p-4 border-b border-surface-border text-text-primary">
+                            <span v-if="warehouse.isprincipal" class="inline-block px-3 py-1 rounded-xl text-xs font-semibold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300">
+                                {{ $t('warehouse.principal') }}
+                            </span>
+                            <span v-else class="text-text-tertiary">-</span>
+                        </td>
+                        <td class="p-4 border-b border-surface-border text-text-primary">
+                            {{ warehouse.incharge?.name || '-' }}
+                        </td>
+                        <td class="p-4 border-b border-surface-border text-text-primary">
                             <div class="flex gap-2">
+                                <router-link :to="`/app/settings/warehouses/${warehouse.id}/products`" class="p-1.5 border-none rounded-md cursor-pointer transition-all duration-200 flex items-center justify-center bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/15 dark:hover:bg-green-900/25 no-underline" :title="$t('warehouse.viewProducts')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="7" height="7"/>
+                                        <rect x="14" y="3" width="7" height="7"/>
+                                        <rect x="14" y="14" width="7" height="7"/>
+                                        <rect x="3" y="14" width="7" height="7"/>
+                                    </svg>
+                                </router-link>
                                 <button @click="openEditModal(warehouse)" class="p-1.5 border-none rounded-md cursor-pointer transition-all duration-200 flex items-center justify-center bg-blue-100 text-accent-info hover:bg-blue-200 dark:bg-blue-900/15 dark:hover:bg-blue-900/25" :title="$t('common.edit')">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -121,7 +136,7 @@ const { t } = useI18n();
 const showModal = ref(false);
 const editingWarehouse = ref(null);
 const searchQuery = ref('');
-const statusFilter = ref('');
+const typeFilter = ref('');
 const perPage = ref(10);
 let searchTimeout = null;
 
@@ -164,7 +179,7 @@ const handleSearch = () => {
             per_page: perPage.value,
             page: 1,
             search: searchQuery.value,
-            status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
+            type: typeFilter.value || undefined
         });
     }, 500);
 };
@@ -174,7 +189,7 @@ const handleFilter = () => {
         per_page: perPage.value,
         page: 1,
         search: searchQuery.value,
-        status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
+        type: typeFilter.value || undefined
     });
 };
 
@@ -183,7 +198,7 @@ const changePage = (page) => {
         per_page: perPage.value,
         page,
         search: searchQuery.value,
-        status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
+        type: typeFilter.value || undefined
     });
 };
 
@@ -193,7 +208,7 @@ const changePerPage = (newPerPage) => {
         per_page: newPerPage,
         page: 1,
         search: searchQuery.value,
-        status: statusFilter.value !== '' ? statusFilter.value === '1' : undefined
+        type: typeFilter.value || undefined
     });
 };
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\NumberingSystem;
 
@@ -71,6 +72,16 @@ class Product extends Model
     public function primaryImage(): HasMany
     {
         return $this->hasMany(ProductImage::class)->where('isprimary', true);
+    }
+
+    /**
+     * Get the warehouses that contain this product.
+     */
+    public function warehouses(): BelongsToMany
+    {
+        return $this->belongsToMany(Warehouse::class, 'product_warehouse')
+                    ->withPivot('quantity', 'cmup')
+                    ->withTimestamps();
     }
 
     // Scopes

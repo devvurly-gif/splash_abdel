@@ -15,12 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('title');
-            $table->boolean('status')->default(true);
+            $table->boolean('isprincipal')->default(false);
+            $table->foreignId('inchargeOf')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('type', ['warehouse', 'store', 'tank'])->default('warehouse');
             $table->timestamps();
             
             // Indexes
             $table->index('code');
-            $table->index('status');
+            $table->index('isprincipal');
+            $table->index('type');
+            $table->index('inchargeOf');
         });
     }
 

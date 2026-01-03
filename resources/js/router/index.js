@@ -12,6 +12,8 @@ const ProductsIndex = () => import('../pages/secure/products/index.vue');
 const ProductNew = () => import('../pages/secure/products/new.vue');
 const ProductEdit = () => import('../pages/secure/products/edit.vue');
 const NumberingSystemsIndex = () => import('../pages/secure/settings/numerotation/index.vue');
+const WarehousesIndex = () => import('../pages/secure/settings/warehouses/index.vue');
+const WarehouseProducts = () => import('../pages/secure/settings/warehouses/products.vue');
 
 const routes = [
     {
@@ -105,6 +107,25 @@ const routes = [
                     title: 'Numbering Systems',
                     requiresAuth: true,
                     icon: 'settings'
+                }
+            },
+            {
+                path: 'settings/warehouses',
+                name: 'warehouses',
+                component: WarehousesIndex,
+                meta: {
+                    title: 'Warehouses',
+                    requiresAuth: true,
+                    icon: 'settings'
+                }
+            },
+            {
+                path: 'settings/warehouses/:id/products',
+                name: 'warehouse-products',
+                component: WarehouseProducts,
+                meta: {
+                    title: 'Warehouse Products',
+                    requiresAuth: true
                 }
             }
             

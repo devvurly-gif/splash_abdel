@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -13,7 +14,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['category', 'brand', 'images']);
+        $query = Product::with(['category', 'brand', 'images', 'warehouses']);
 
         // Filter by isactive if provided
         if ($request->has('isactive') && $request->isactive !== '' && $request->isactive !== null) {
@@ -43,6 +44,16 @@ class ProductController extends Controller
         // Pagination - order by id desc (newest first)
         $perPage = $request->get('per_page', 10);
         $products = $query->orderBy('id', 'desc')->paginate($perPage);
+        
+        // Add total stock quantity for each product (sum of quantities across all warehouses)
+        $products->getCollection()->transform(function ($product) {
+            // Calculate total stock by summing pivot quantities
+            $totalStock = \DB::table('product_warehouse')
+                ->where('product_id', $product->id)
+                ->sum('quantity') ?? 0;
+            $product->total_stock = (int) $totalStock;
+            return $product;
+        });
 
         return response()->json([
             'success' => true,
@@ -187,6 +198,39 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Product deleted successfully.'
+        ]);
+    }
+
+    /**
+     * Get warehouses containing a product.
+     */
+    public function warehouses(string $id): JsonResponse
+    {
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found.'
+            ], 404);
+        }
+
+        $warehouses = $product->warehouses()->with('incharge')->get();
+        
+        // Add pivot data and calculate total for each warehouse
+        $warehouses->transform(function ($warehouse) {
+            $warehouse->quantity = $warehouse->pivot->quantity ?? 0;
+            $warehouse->cmup = $warehouse->pivot->cmup ?? 0;
+            $warehouse->grand_total = ($warehouse->quantity * $warehouse->cmup);
+            return $warehouse;
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'product' => $product,
+                'warehouses' => $warehouses
+            ]
         ]);
     }
 }
